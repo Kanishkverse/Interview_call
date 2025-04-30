@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conference Room</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Face API library for facial detection and emotion recognition -->
+    <script defer src="{{ url_for('static', filename='js/face-api.min.js') }}"></script>
+    <!-- Custom JavaScript files -->
+    <script defer src="{{ url_for('static', filename='js/emotion.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/conference.js') }}"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="room-header">
+            <h1>Conference Room: <span id="room-id">{{ room_id }}</span></h1>
+            <div class="room-controls">
+                <button id="toggle-video" class="btn control">
+                    <span class="icon">📹</span>
+                </button>
+                <button id="toggle-audio" class="btn control">
+                    <span class="icon">🎤</span>
+                </button>
+                <button id="share-screen" class="btn control">
+                    <span class="icon">📤</span>
+                </button>
+                <button id="end-call" class="btn danger">End Call</button>
+            </div>
+        </header>
+        
+        <main class="conference-container">
+            <div class="video-grid" id="video-grid">
+                <!-- Local video will be placed here -->
+                <div class="video-container local">
+                    <video id="local-video" autoplay muted playsinline></video>
+                    <div class="video-overlay">
+                        <span class="user-name">You</span>
+                        <span id="emotion-status" class="emotion-status">Analyzing...</span>
+                    </div>
+                </div>
+                
+                <!-- Remote videos will be dynamically added here -->
+                <div id="remote-videos"></div>
+            </div>
+            
+            <div class="side-panel">
+                <div class="chat-container">
+                    <h3>Chat</h3>
+                    <div id="chat-messages" class="chat-messages"></div>
+                    <div class="chat-input">
+                        <input type="text" id="message-input" placeholder="Type your message...">
+                        <button id="send-message" class="btn">Send</button>
+                    </div>
+                </div>
+                
+                <div class="participants-container">
+                    <h3>Participants</h3>
+                    <ul id="participants-list" class="participants-list">
+                        <li>You ({{ 'Host' if is_host else 'Participant' }})</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Hidden canvas for face detection processing -->
+    <canvas id="face-detection-canvas" style="display: none;"></canvas>
+    
+    <!-- User data to pass to JavaScript -->
+    <script>
+        const ROOM_ID = '{{ room_id }}';
+        const USER_ID = '{{ user_id }}';
+        const IS_HOST = {{ ('true' if is_host else 'false') | tojson | safe }};
+    </script>
+</body>
+</html>

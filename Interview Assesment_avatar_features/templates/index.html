@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Conference with Emotion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Video Conference with Emotion Analysis</h1>
+            <p>Connect with others and get insights about your emotional engagement</p>
+        </header>
+        
+        <main>
+            <div class="card">
+                <h2>Start a New Meeting</h2>
+                <p>Create a new meeting and invite others to join</p>
+                <form action="{{ url_for('create_room') }}" method="post">
+                    <button type="submit" class="btn primary">Create Meeting</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>Join a Meeting</h2>
+                <p>Enter a meeting code to join an existing meeting</p>
+                <form action="{{ url_for('join_room') }}" method="post">
+                    <input type="text" name="room_id" placeholder="Enter meeting code" required>
+                    <button type="submit" class="btn secondary">Join Meeting</button>
+                </form>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Powered by Facial Emotion Detection Technology</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conference Call Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script defer src="{{ url_for('static', filename='js/report.js') }}"></script>
+</head>
+<body>
+    <div class="container report-container">
+        <header>
+            <h1>Call Analysis Report</h1>
+            <p>Your emotion analysis and engagement metrics</p>
+        </header>
+        
+        <main>
+            <div class="report-section">
+                <h2>Emotional Distribution</h2>
+                <p>The distribution of your emotional states during the call:</p>
+                <div class="chart-container">
+                    <canvas id="emotions-chart"></canvas>
+                </div>
+                <div class="stats-grid">
+                    {% for emotion, percentage in emotion_percentages.items() %}
+                    <div class="stat-card">
+                        <h3>{{ emotion }}</h3>
+                        <p class="stat-value">{{ "%.1f"|format(percentage) }}%</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h2>Eye Contact Analysis</h2>
+                <p>Your eye contact engagement during the call:</p>
+                <div class="chart-container">
+                    <canvas id="eye-contact-chart"></canvas>
+                </div>
+                <div class="stat-card large">
+                    <h3>Eye Contact Percentage</h3>
+                    <p class="stat-value">{{ "%.1f"|format(eye_contact_percentage) }}%</p>
+                    <p class="stat-description">
+                        {% if eye_contact_percentage > 80 %}
+                            Excellent engagement during the call!
+                        {% elif eye_contact_percentage > 60 %}
+                            Good engagement level.
+                        {% elif eye_contact_percentage > 40 %}
+                            Moderate engagement level.
+                        {% else %}
+                            Low engagement detected. Consider minimizing distractions.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <!-- Add this new section to the report.html template after the eye contact section -->
+            <div class="report-section">
+                <h2>Engagement Timeline</h2>
+                <p>Your engagement levels throughout the call:</p>
+                <div class="chart-container">
+                    <canvas id="engagement-timeline-chart"></canvas>
+                </div>
+                <div class="engagement-insights">
+                    <h3>Key Engagement Insights</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Engagement Quality</h3>
+                            <p class="stat-value">
+                                {% if eye_contact_percentage > 75 %}
+                                    Excellent
+                                {% elif eye_contact_percentage > 50 %}
+                                    Good
+                                {% elif eye_contact_percentage > 25 %}
+                                    Fair
+                                {% else %}
+                                    Needs Improvement
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Engagement Consistency</h3>
+                            <p class="stat-value">
+                                {% if eye_contact_percentage > 70 %}
+                                    Consistent
+                                {% elif eye_contact_percentage > 40 %}
+                                    Moderate
+                                {% else %}
+                                    Inconsistent
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="engagement-details">
+                        <h4>Understanding Your Eye Contact</h4>
+                        <p>Eye contact is measured by analyzing your facial landmarks and head pose throughout the call. The system determines if you're looking directly at the camera by:</p>
+                        <ul>
+                            <li>Detecting if your eyes are open</li>
+                            <li>Measuring your head position and orientation</li>
+                            <li>Analyzing the positioning of your eyes relative to other facial features</li>
+                            <li>Calculating the probability that you're looking at the camera</li>
+                        </ul>
+                        <p>Higher eye contact percentages indicate stronger engagement and attentiveness during communication.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <h2>Call Summary</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Duration</h3>
+                        <p class="stat-value">{{ total_duration // 60 }} min {{ total_duration % 60 }} sec</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Primary Emotion</h3>
+                        <p class="stat-value">
+                            {% set max_emotion = emotion_percentages|dictsort(by='value')|last %}
+                            {{ max_emotion[0] }}
+                        </p>
+                    </div>
+                </div>
+                <div class="report-recommendations">
+                    <h3>Recommendations</h3>
+                    <ul>
+                        {% set max_emotion = emotion_percentages|dictsort(by='value')|last %}
+                        {% if max_emotion[0] == 'neutral' %}
+                            <li>Your expression was mostly neutral. Consider showing more emotional engagement.</li>
+                        {% elif max_emotion[0] == 'happy' %}
+                            <li>Your positive engagement is excellent!</li>
+                        {% elif max_emotion[0] == 'sad' or max_emotion[0] == 'angry' %}
+                            <li>You displayed negative emotions frequently. Consider addressing underlying concerns.</li>
+                        {% endif %}
+                        
+                        {% if eye_contact_percentage < 50 %}
+                            <li>Try to maintain more consistent eye contact to improve engagement.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="report-actions">
+                <a href="{{ url_for('index') }}" class="btn primary">Return Home</a>
+                <button id="download-report" class="btn secondary">Download Report</button>
+            </div>
+        </main>
+        
+        <footer>
+            <p>This analysis is for informational purposes only.</p>
+        </footer>
+    </div>
+    
+    <!-- Data for charts -->
+    <script>
+        // Data for charts
+        const emotionData = {{ emotion_percentages|tojson }};
+        const eyeContactPercentage = {{ eye_contact_percentage }};
+        
+        // Make totalDuration available to report.js
+        window.totalDuration = {{ total_duration }};
+    </script>
+</body>
+</html>
